@@ -1,4 +1,4 @@
-# moviesapp
+# MoviesLife
 ## technologies
 
  - Vue (Vuex, Vue-router, Bootstrap-vue)
