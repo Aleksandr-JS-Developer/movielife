@@ -1,9 +1,9 @@
-import IDs from '@/store/mock/imdb_top250';
-import axios from '@/plugins/axios';
-import mutations from '@/store/mutations';
+import IDs from "@/store/mock/imdb_top250";
+import axios from "@/plugins/axios";
+import mutations from "@/store/mutations";
 
-function serializeResponse( movies ) {
-  return movies.reduce( (acc, movie) => {
+function serializeResponse(movies) {
+  return movies.reduce((acc, movie) => {
     acc[movie.imdbID] = movie;
     return acc;
   }, {});
@@ -29,77 +29,75 @@ const moviesStore = {
     isSearch: ({ isSearch }) => isSearch
   },
   mutations: {
-    [MOVIES]( state, value ) {
+    [MOVIES](state, value) {
       state.movies = value;
     },
-    [CURRENT_PAGE]( state, value ) {
+    [CURRENT_PAGE](state, value) {
       state.currentPage = value;
     },
-    [REMOVE_MOVIE]( state, index ) {
+    [REMOVE_MOVIE](state, index) {
       state.top250IDs.splice(index, 1);
     },
-    [TOGGLE_SEARCH]( state, bool ) {
+    [TOGGLE_SEARCH](state, bool) {
       state.isSearch = bool;
     }
   },
   actions: {
     async fetchMovies({ getters, commit, dispatch }) {
       try {
-        dispatch('toggleLoader', true, { root: true });
+        dispatch("toggleLoader", true, { root: true });
         const { currentPage, moviesPerPage, slicedIDs } = getters;
         const from = currentPage * moviesPerPage - moviesPerPage;
         const to = currentPage * moviesPerPage;
-        const moviesToFetch = slicedIDs( from, to );
+        const moviesToFetch = slicedIDs(from, to);
 
-        const requests = moviesToFetch.map( id => axios.get(`/?i=${id}`) );
-        const response = await Promise.all( requests );
-        const movies = serializeResponse( response );
-        commit( MOVIES, movies );
-      } catch ( err ) {
-        console.log( err );
-      } finally {
-        dispatch('toggleLoader', false, { root: true });
+        const requests = moviesToFetch.map(id => axios.get(`/?i=${id}`));
+        const response = await Promise.all(requests);
+        const movies = serializeResponse(response);
+        commit(MOVIES, movies);
+      } catch (err) {} finally {
+        dispatch("toggleLoader", false, { root: true });
       }
     },
     changeCurrentPage({ commit, dispatch }, page) {
-      commit( CURRENT_PAGE, page );
-      dispatch( 'fetchMovies' );
+      commit(CURRENT_PAGE, page);
+      dispatch("fetchMovies");
     },
     removeMovie({ commit, dispatch, state }, id) {
-      const index = state.top250IDs.findIndex( item => item === id );
+      const index = state.top250IDs.findIndex(item => item === id);
 
-      if( index !== -1 ){
-        commit( REMOVE_MOVIE, index );
-        dispatch( 'fetchMovies' );
+      if(index !== -1){
+        commit(REMOVE_MOVIE, index);
+        dispatch("fetchMovies");
       }
     },
     async searchMovies({ commit, dispatch }, query) {
       try {
-        dispatch( 'toggleLoader', true, { root: true } );
-        const response = await axios.get( `/?s=${query}` );
+        dispatch("toggleLoader", true, { root: true });
+        const response = await axios.get(`/?s=${query}`);
 
-        if( response.Error ){
-          throw Error( response.Error );
+        if(response.Error){
+          throw Error(response.Error);
         }
 
-        const movies = serializeResponse( response.Search );
-        commit( MOVIES, movies );
-      } catch ( err ){
+        const movies = serializeResponse(response.Search);
+        commit(MOVIES, movies);
+      } catch (err){
         dispatch(
-          'showNotify',
+          "showNotify",
           {
             msg: err.message,
-            title: 'Error',
-            variant: 'danger'
+            title: "Error",
+            variant: "danger"
           },
           { root: true }
-        );
+       );
       } finally {
-        dispatch( 'toggleLoader', false, { root: true } );
+        dispatch("toggleLoader", false, { root: true });
       }
     },
-    toggleSearchState( { commit }, bool ) {
-      commit( TOGGLE_SEARCH, bool );
+    toggleSearchState({ commit }, bool) {
+      commit(TOGGLE_SEARCH, bool);
     }
   }
 };

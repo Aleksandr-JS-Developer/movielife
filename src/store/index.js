@@ -1,10 +1,10 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import movies from './modules/movies';
-import loader from './modules/loader';
-import notification from './modules/notification';
+import Vue from "vue";
+import Vuex from "vuex";
+import movies from "./modules/movies";
+import loader from "./modules/loader";
+import notification from "./modules/notification";
 
-Vue.use( Vuex );
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {},

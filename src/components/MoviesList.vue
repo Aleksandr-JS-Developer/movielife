@@ -73,7 +73,7 @@ export default {
     async onRemoveItem({ id, title }) {
       const isConfirmed = await this.$bvModal.msgBoxConfirm(
         `Are you sure delete ${title}?`
-      );
+     );
 
       if (isConfirmed) {
         this.removeMovie(id);
